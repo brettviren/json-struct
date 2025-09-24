@@ -1,0 +1,27 @@
+#+title json-struct
+
+* Overview
+
+This is a proof of concept for how to serialize between static C++ types and
+dynamic JSON objects with relatively minimal instrumenting in C++.
+
+It supports defaults in C++, ~std::optional~ and ~std::variant~ and support for
+generic structs (which require some instrumenting).
+
+The converter is templated on traits with JsonCPP and nlohmann/json implemented.
+
+It was largely designed and written by Gemini 2.5 Flash, with the idea,
+debugging and testing coming from me.
+
+* Exercise it
+
+Compiles with clang 19 and gcc 14.
+
+#+begin_example
+$ c++ -std=c++17 -I. -I /usr/include/jsoncpp  -o test_jsonstruct test_jsonstruct.cpp -ljsoncpp
+$ ./test_jsonstruct
+$ ./test_jsonstruct test.json
+#+end_example
+
+
+
