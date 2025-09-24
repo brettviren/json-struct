@@ -2,6 +2,8 @@
 
 #include <jsonstruct/converter.hpp>
 
+#include <iostream>             // debug for now
+
 namespace jsonstruct {
 
     template<typename StructType, typename MemberType> // Removed JsonLibTraits from Field struct itself
@@ -22,7 +24,7 @@ namespace jsonstruct {
         bool parse(StructType& obj, const typename JsonLibTraits::ValueType& parent_json) const {
             if (JsonLibTraits::has_member(parent_json, name)) {
                 // Use the generic Converter with the specified JsonLibTraits
-                return Converter<MemberType, JsonLibTraits>::fromJson(
+                return Converter<MemberType, JsonLibTraits, void>::fromJson(
                     JsonLibTraits::get_member(parent_json, name), obj.*ptr_to_member);
             } else {
                 if (default_value) {
@@ -40,7 +42,9 @@ namespace jsonstruct {
         template<typename JsonLibTraits>
         void serialize(const StructType& obj, typename JsonLibTraits::ValueType& parent_json) const {
             // Use the generic Converter with the specified JsonLibTraits
-            JsonLibTraits::set_member(parent_json, name, Converter<MemberType, JsonLibTraits>::toJson(obj.*ptr_to_member));
+            JsonLibTraits::set_member(
+                parent_json, name,
+                Converter<MemberType, JsonLibTraits, void>::toJson(obj.*ptr_to_member));
         }
     };
 

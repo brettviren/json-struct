@@ -4,10 +4,10 @@
 
 #include <jsonstruct/traits.hpp>
 
-namespace nlohmannjson {
+namespace jsonstruct::nlohmannjson {
 
-    struct Traits : GenericJsonLibTraits<nlohmann::json> {
-        using Base = GenericJsonLibTraits<nlohmann::json>;
+    struct Traits : jsonstruct::Traits<nlohmann::json> {
+        using Base = jsonstruct::Traits<nlohmann::json>;
         using ValueType = typename Base::ValueType;
 
         // Type checking

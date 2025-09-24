@@ -2,9 +2,9 @@
 
 #include <json/json.h>
 
-#inlcude <jsonstruct/traits.hpp>
+#include <jsonstruct/traits.hpp>
 
-namepace jsonstruct::jsoncpp {
+namespace jsonstruct::jsoncpp {
 
     /// JsonCPP traits
     struct Traits : jsonstruct::Traits<Json::Value> {
