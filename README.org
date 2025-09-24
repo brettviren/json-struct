@@ -1,4 +1,4 @@
-#+title json-struct
+#+title: json-struct
 
 * Overview
 
