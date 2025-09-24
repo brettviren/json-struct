@@ -51,8 +51,8 @@ namespace jsonstruct::jsoncpp {
         static void for_each_object_member(ValueType& obj, Callback&& cb) {
             if (!obj.isObject()) return;
             // JsonCpp's iterators require manual key access and dereference to value
-            for (auto it = obj.begin(); it != obj.end(); ++it) {
-                cb(it.key(), *it);
+            for (auto key : obj.getMemberNames()) {
+                cb(key, obj[key]);
             }
         }
     };

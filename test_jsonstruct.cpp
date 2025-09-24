@@ -1,15 +1,14 @@
-#include "jsonstruct/field.hpp"
+#include "jsonstruct/converter.hpp"
 #include <fstream>
+#include <iostream> 
 
 using namespace jsonstruct;
 
 struct ServerConfig {
     std::string host = "localhost";
     int port = 8080;
-#if 0
     std::optional<bool> debug_mode;
     std::variant<bool, std::string> feature_activation;
-#endif
     struct DatabaseConfig {
         std::string user = "user";
         std::string password = "changme";
@@ -31,10 +30,8 @@ struct ServerConfig {
         return std::make_tuple(
             make_field("host", &ServerConfig::host, std::string("localhost")),
             make_field("port", &ServerConfig::port, 8080),
-#if 0
             make_field("debug_mode", &ServerConfig::debug_mode),
             make_field("feature_activation", &ServerConfig::feature_activation, std::variant<bool, std::string>(true)),
-#endif
             make_field("database", &ServerConfig::db_config),
             make_field("allowed_ips", &ServerConfig::allowed_ips, std::vector<std::string>{})
         );
@@ -42,7 +39,6 @@ struct ServerConfig {
 };
 
 
-#if 0
 #include <jsonstruct/jsoncpp.hpp>
 
 ServerConfig jsoncpp_config(const std::string& filename)
@@ -63,7 +59,13 @@ ServerConfig jsoncpp_config(const std::string& filename)
 
     return config;
 }
-#endif
+
+void jsoncpp_default()
+{
+    ServerConfig config;
+    auto output = Converter<ServerConfig, jsoncpp::Traits>::toJson(config);
+    std::cout << output << "\n";
+}
 
 #include <jsonstruct/nlohmannjson.hpp>
 
@@ -92,16 +94,51 @@ void nlohmann_default()
 }
 
 
+void demo_iteration() {
+    // JsonCPP example
+    Json::Value jsoncpp_obj;
+    jsoncpp_obj["name"] = "Alice";
+    jsoncpp_obj["age"] = 30;
+    jsoncpp_obj["city"] = "New York";
+
+    std::cout << "--- JsonCPP Object Iteration ---" << std::endl;
+    jsoncpp::Traits::for_each_object_member(jsoncpp_obj, [](const std::string& key, Json::Value& value) {
+        std::cout << "Key: " << key << ", Value: " << value.toStyledString();
+    });
+
+    // nlohmann/json example
+    nlohmann::json nlohmann_obj;
+    nlohmann_obj["name"] = "Bob";
+    nlohmann_obj["age"] = 25;
+    nlohmann_obj["country"] = "Canada";
+
+    std::cout << "\n--- Nlohmann/json Object Iteration ---" << std::endl;
+    nlohmannjson::Traits::for_each_object_member(nlohmann_obj, [](const std::string& key, nlohmann::json& value) {
+        std::cout << "Key: " << key << ", Value: " << value.dump() << std::endl;
+    });
+
+    // Array iteration (direct range-based for loop, which works for both)
+    Json::Value jsoncpp_arr;
+    jsoncpp_arr.append(10);
+    jsoncpp_arr.append("hello");
+    std::cout << "\n--- JsonCPP Array Iteration (direct) ---" << std::endl;
+    for (const auto& item : jsoncpp_arr) {
+        std::cout << "Array Item: " << item.toStyledString();
+    }
+}
+
 int main (int argc, char* argv[])
 {
     if (argc < 2) {
 
         nlohmann_default();
+        jsoncpp_default();
+        demo_iteration();
 
         return 0;
     }
 
-//    auto a = jsoncpp_config(argv[1]);
+    auto a = jsoncpp_config(argv[1]);
     auto b = nlohmann_config(argv[1]);
 
     return 0;
